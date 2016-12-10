@@ -6,7 +6,7 @@
 #define SCREEN_WIDTH 600   //ver si las voy a usar
 #define SCREEN_HEIGHT 600
 
-#define SHIP_VELOCITY_X 10
+#define SHIP_VELOCITY_X 5
 
 #define FPS 60
 

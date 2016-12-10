@@ -5,23 +5,21 @@
 
 class Character
 {
+    protected:
+        ALLEGRO_BITMAP* characterSprite;
+        Point pos;
+        Bounds bounds;
+        Velocity velocity;
+
     public: // Métodos
         Character(ALLEGRO_BITMAP* sprite, Point startingPos, Bounds bounds);
-        ~Character(){};
+        ~Character();
 
         Point getPos();
         void setVelocity(Velocity v);
 
         void updatePosition();
         void draw();
-
-    protected:
-        Point pos;
-        Bounds bounds;
-        Velocity velocity;
-
-        ALLEGRO_BITMAP* characterSprite;
-
 };
 
 #endif // CHARACTER_H

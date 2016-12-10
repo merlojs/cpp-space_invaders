@@ -6,7 +6,6 @@
 
 #include "header.h"
 
-#include "Character.h"
 #include "PlayerCharacter.h"
 
 using namespace std;
@@ -79,7 +78,8 @@ int main()
       return -1;
    }
 
-    GameInput *playerInput;
+	GameInput input = {};
+	GameInput *playerInput = &input;
 
     // ALLEGRO_COLOR black = al_map_rgb(0, 0, 0);
 
@@ -148,9 +148,7 @@ int main()
     PlayerCharacter *player = new PlayerCharacter(spriteNave,  startingPos, playerBounds);
 
     al_convert_mask_to_alpha(background, al_map_rgb(255, 0 , 255));  //HACE INVISIBLE EL COLOR MAGENTA
-    al_draw_bitmap(background,0,0,0);
-
-    al_flip_display(); //si no se ve blanco
+    //al_draw_bitmap(background,0,0,0);
 
    /* GAME ROUTINE */
     while(!doexit){
@@ -173,15 +171,24 @@ int main()
                 keyboardEventHandler(false, ev.keyboard.keycode, playerInput);
             }
         }
-        // Fin de procesamiento de eventos
-        // Procesar el input
-        player->processInput(playerInput);
 
-        // Chequeo de colisiones
-        // Dibujado
-        if (redraw) {
-            player->draw();
-        }
+		// TODO: Agregar tope de FPS
+			// Fin de procesamiento de eventos
+			// Procesar el input
+			player->processInput(playerInput);
+			player->updatePosition();
+
+			// Chequeo de colisiones
+			// player->chequeoColisiones()
+
+			// Dibujado
+			if (redraw) {
+				al_clear_to_color(al_map_rgb(0, 0, 0));
+				al_draw_bitmap(background, 0, 0, 0);
+				player->draw();
+				al_flip_display(); //si no se ve blanco
+			}
+
     }
 
     al_destroy_timer(timer);
