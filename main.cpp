@@ -127,6 +127,7 @@ int main()
     /* START TIMER */
     al_start_timer(timer);
 
+	// al_convert_mask_to_alpha(this->characterSprite, al_map_rgb(255, 0 , 255));
 
     //al_set_target_bitmap(background);
     al_set_target_bitmap(al_get_backbuffer(display));
@@ -142,46 +143,8 @@ int main()
     startingPos.y = SCREEN_HEIGHT - 70;
 
 	PlayerCharacter *player = new PlayerCharacter(spriteShip, startingPos, playerBounds);
-	//EnemyCharacter **enemyGrid = new EnemyCharacter*;
 
-	Bounds enemyBounds = {};
-	enemyBounds.w = ENEMY_WIDTH;
-	enemyBounds.h = ENEMY_HEIGHT;
-
-	Point enemyPos = {};
-	enemyPos.x = ENEMY_GRID_STARTING_X;
-	enemyPos.y = ENEMY_GRID_STARTING_Y;
-	
 	EnemyGrid *enemyGrid = new EnemyGrid(ENEMY_GRID_WIDTH, ENEMY_GRID_HEIGHT, spriteEnemy);
-/*
-	EnemyCharacter *firstEnemyRow[5] = {
-		new EnemyCharacter(spriteEnemy, enemyPos, enemyBounds),
-		new EnemyCharacter(spriteEnemy, enemyPos, enemyBounds),
-		new EnemyCharacter(spriteEnemy, enemyPos, enemyBounds),
-		new EnemyCharacter(spriteEnemy, enemyPos, enemyBounds),
-		new EnemyCharacter(spriteEnemy, enemyPos, enemyBounds)
-	};
-	
-
-	(firstEnemyRow[1])->setPos(ENEMY_GRID_STARTING_X + (ENEMY_SPACING_H + ENEMY_WIDTH), ENEMY_GRID_STARTING_Y);
-	(firstEnemyRow[2])->setPos(ENEMY_GRID_STARTING_X + (ENEMY_SPACING_H + ENEMY_WIDTH) * 2, ENEMY_GRID_STARTING_Y);
-	(firstEnemyRow[3])->setPos(ENEMY_GRID_STARTING_X + (ENEMY_SPACING_H + ENEMY_WIDTH) * 3, ENEMY_GRID_STARTING_Y);
-	(firstEnemyRow[4])->setPos(ENEMY_GRID_STARTING_X + (ENEMY_SPACING_H + ENEMY_WIDTH) * 3, ENEMY_GRID_STARTING_Y);
-	*/
-	/*
-	for (int i = 0; i < ENEMY_GRID_HEIGHT; i++) {
-		Point enemyPos = {};
-		enemyPos.y = ENEMY_GRID_STARTING_Y + i * (ENEMY_SPACING_V + ENEMY_HEIGHT);
-
-		for (int j = 0; j < ENEMY_GRID_WIDTH; j++) {
-			enemyPos.x = ENEMY_GRID_STARTING_X + j * (ENEMY_SPACING_H + ENEMY_WIDTH);
-
-			EnemyCharacter *enemyShip = new EnemyCharacter(spriteEnemy, enemyPos, enemyBounds);
-			enemyGrid[i][j] = enemyShip;
-		}
-	}
-	*/
-
     al_convert_mask_to_alpha(background, al_map_rgb(255, 0 , 255));  //HACE INVISIBLE EL COLOR MAGENTA
     //al_draw_bitmap(background,0,0,0);
 

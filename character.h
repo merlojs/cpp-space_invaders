@@ -2,8 +2,9 @@
 #define CHARACTER_H
 
 #include "header.h"
+#include "Collidable.h"
 
-class Character
+class Character : public Collidable
 {
     protected:
         ALLEGRO_BITMAP* characterSprite;
@@ -16,13 +17,7 @@ class Character
         Character(ALLEGRO_BITMAP* sprite, Point startingPos, Bounds bounds);
         ~Character();
 
-		void setPos(Point pos);
-		void setPos(int x, int y);
-
-		Bounds getBounds();
-		Point getPos();
 		Point getPreviousPos();
-
 		void resetPosition();
 
         void setVelocity(Velocity v);
@@ -31,9 +26,7 @@ class Character
         void draw();
 
 		/* los enemigos disparan? por las dudas lo dejo aca */
-		void shoot();
-
-
+//		void shoot();
 };
 
 #endif // CHARACTER_H
