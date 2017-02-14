@@ -1,18 +1,10 @@
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <iostream>
-#include <time.h>
-
 #include "header.h"
 
+#include "Bullet.h"
 #include "PlayerCharacter.h"
-
-using namespace std;
-
-enum MOVE_DIR {
-    UP, RIGHT, DOWN, LEFT
-};
+#include "EnemyGrid.h"
+#include "EnemyCharacter.h"
 
 int main()
 {
@@ -84,13 +76,16 @@ int main()
     // ALLEGRO_COLOR black = al_map_rgb(0, 0, 0);
 
     // ALLEGRO_BITMAP *buffer = al_create_bitmap(448,518);
-    ALLEGRO_BITMAP *spriteNave = al_load_bitmap("Recursos/nave.bmp");
+    ALLEGRO_BITMAP *spriteShip = al_load_bitmap("Recursos/nave.bmp");
+	ALLEGRO_BITMAP *spriteEnemy = al_load_bitmap("Recursos/enemigos.bmp");
     // ALLEGRO_BITMAP *portada = al_load_bitmap("Recursos/portada.bmp");
     ALLEGRO_BITMAP *background = al_load_bitmap("Recursos/fondo.bmp");
     // ALLEGRO_BITMAP *shields = al_load_bitmap("Recursos/escudos.bmp");
     // ALLEGRO_BITMAP *game_over = al_load_bitmap("Recursos/GameOver.bmp");
-    ALLEGRO_SAMPLE *song = al_load_sample("Recursos/Retribution.ogg");
-
+	ALLEGRO_BITMAP *spriteBullet = al_load_bitmap("Recursos/bala.bmp");
+	
+	ALLEGRO_SAMPLE *song = al_load_sample("Recursos/Retribution.ogg");
+	
     ALLEGRO_SAMPLE_INSTANCE *songInstance = al_create_sample_instance(song);
     al_set_sample_instance_playmode(songInstance, ALLEGRO_PLAYMODE_LOOP);
     al_attach_sample_instance_to_mixer(songInstance, al_get_default_mixer());
@@ -125,8 +120,9 @@ int main()
     al_register_event_source(event_queue, al_get_display_event_source(display));
     al_register_event_source(event_queue, al_get_timer_event_source(timer));
     al_register_event_source(event_queue, al_get_keyboard_event_source());
-
-    al_play_sample_instance(songInstance);
+	
+	// TODO: DESCOMENTAR!!!!!
+    //al_play_sample_instance(songInstance);
 
     /* START TIMER */
     al_start_timer(timer);
@@ -145,14 +141,53 @@ int main()
     startingPos.x = SCREEN_WIDTH / 2 - playerBounds.w / 2;
     startingPos.y = SCREEN_HEIGHT - 70;
 
-    PlayerCharacter *player = new PlayerCharacter(spriteNave,  startingPos, playerBounds);
+	PlayerCharacter *player = new PlayerCharacter(spriteShip, startingPos, playerBounds);
+	//EnemyCharacter **enemyGrid = new EnemyCharacter*;
+
+	Bounds enemyBounds = {};
+	enemyBounds.w = ENEMY_WIDTH;
+	enemyBounds.h = ENEMY_HEIGHT;
+
+	Point enemyPos = {};
+	enemyPos.x = ENEMY_GRID_STARTING_X;
+	enemyPos.y = ENEMY_GRID_STARTING_Y;
+	
+	EnemyGrid *enemyGrid = new EnemyGrid(ENEMY_GRID_WIDTH, ENEMY_GRID_HEIGHT, spriteEnemy);
+/*
+	EnemyCharacter *firstEnemyRow[5] = {
+		new EnemyCharacter(spriteEnemy, enemyPos, enemyBounds),
+		new EnemyCharacter(spriteEnemy, enemyPos, enemyBounds),
+		new EnemyCharacter(spriteEnemy, enemyPos, enemyBounds),
+		new EnemyCharacter(spriteEnemy, enemyPos, enemyBounds),
+		new EnemyCharacter(spriteEnemy, enemyPos, enemyBounds)
+	};
+	
+
+	(firstEnemyRow[1])->setPos(ENEMY_GRID_STARTING_X + (ENEMY_SPACING_H + ENEMY_WIDTH), ENEMY_GRID_STARTING_Y);
+	(firstEnemyRow[2])->setPos(ENEMY_GRID_STARTING_X + (ENEMY_SPACING_H + ENEMY_WIDTH) * 2, ENEMY_GRID_STARTING_Y);
+	(firstEnemyRow[3])->setPos(ENEMY_GRID_STARTING_X + (ENEMY_SPACING_H + ENEMY_WIDTH) * 3, ENEMY_GRID_STARTING_Y);
+	(firstEnemyRow[4])->setPos(ENEMY_GRID_STARTING_X + (ENEMY_SPACING_H + ENEMY_WIDTH) * 3, ENEMY_GRID_STARTING_Y);
+	*/
+	/*
+	for (int i = 0; i < ENEMY_GRID_HEIGHT; i++) {
+		Point enemyPos = {};
+		enemyPos.y = ENEMY_GRID_STARTING_Y + i * (ENEMY_SPACING_V + ENEMY_HEIGHT);
+
+		for (int j = 0; j < ENEMY_GRID_WIDTH; j++) {
+			enemyPos.x = ENEMY_GRID_STARTING_X + j * (ENEMY_SPACING_H + ENEMY_WIDTH);
+
+			EnemyCharacter *enemyShip = new EnemyCharacter(spriteEnemy, enemyPos, enemyBounds);
+			enemyGrid[i][j] = enemyShip;
+		}
+	}
+	*/
 
     al_convert_mask_to_alpha(background, al_map_rgb(255, 0 , 255));  //HACE INVISIBLE EL COLOR MAGENTA
     //al_draw_bitmap(background,0,0,0);
 
    /* GAME ROUTINE */
     while(!doexit){
-        bool redraw = true;
+        bool redraw = false;
         ALLEGRO_EVENT ev;
         ALLEGRO_TIMEOUT timeout;   // Wait time for an event to occur
         al_init_timeout(&timeout, 0.06);
@@ -177,15 +212,25 @@ int main()
 			// Procesar el input
 			player->processInput(playerInput);
 			player->updatePosition();
+			enemyGrid->updatePosition();
+
+			// Limite para que la nave del jugador no pueda salir de la pantalla
+			if (player->getPos().x < SCREEN_LEFT || player->getPos().x + player->getBounds().w > SCREEN_RIGHT) {
+				player->resetPosition();
+			}
 
 			// Chequeo de colisiones
-			// player->chequeoColisiones()
+			//player->chequeoColisiones()
 
 			// Dibujado
 			if (redraw) {
 				al_clear_to_color(al_map_rgb(0, 0, 0));
 				al_draw_bitmap(background, 0, 0, 0);
 				player->draw();
+
+				enemyGrid->draw();
+				enemyGrid->debugDraw();
+
 				al_flip_display(); //si no se ve blanco
 			}
 
@@ -193,7 +238,9 @@ int main()
 
     al_destroy_timer(timer);
     al_destroy_display(display);
-    al_destroy_bitmap(spriteNave);
+    al_destroy_bitmap(spriteShip);
+	al_destroy_bitmap(spriteEnemy);
+	al_destroy_bitmap(spriteBullet);
     al_destroy_bitmap(background);
     al_destroy_sample(song);
     al_destroy_sample_instance(songInstance);
