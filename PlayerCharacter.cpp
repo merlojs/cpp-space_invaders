@@ -24,7 +24,6 @@ void PlayerCharacter::processInput(GameInput *playerInput, BulletManager *bullet
 	}
 
 	if (playerInput->action && !bulletManager->hasPlayerBullet()) {
-		cout << "DISPARO!" << endl;
 		bulletManager->addPlayerBullet(this->shoot());
 	}
 }

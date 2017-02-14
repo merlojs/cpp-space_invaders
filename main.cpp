@@ -53,6 +53,10 @@ int main()
         return false;
     }
 
+	// initialize the font addon
+	// TODO: Agregar fuentes para escribir
+	al_init_font_addon();
+
     /* AUDIO */
 
     if(!al_install_audio()){
@@ -85,7 +89,7 @@ int main()
 	ALLEGRO_BITMAP *spriteBullet = al_load_bitmap("Recursos/Bala2.bmp");
 	
 	ALLEGRO_SAMPLE *song = al_load_sample("Recursos/Retribution.ogg");
-	
+
     ALLEGRO_SAMPLE_INSTANCE *songInstance = al_create_sample_instance(song);
     al_set_sample_instance_playmode(songInstance, ALLEGRO_PLAYMODE_LOOP);
     al_attach_sample_instance_to_mixer(songInstance, al_get_default_mixer());
@@ -213,7 +217,7 @@ int main()
 				bulletManager->draw();
 				scoreBoard->draw();
 
-				enemyGrid->debugDraw();
+				//enemyGrid->debugDraw();
 
 				al_flip_display(); //si no se ve blanco
 			}

@@ -1,4 +1,8 @@
-#pragma once
+#ifndef SCORE_BOARD_H
+#define SCORE_BOARD_H
+
+#include "header.h"
+
 class ScoreBoard
 {
 	private:
@@ -10,3 +14,5 @@ public:
 	void addPoints(int points);
 	void draw();
 };
+
+#endif // SCORE_BOARD_H

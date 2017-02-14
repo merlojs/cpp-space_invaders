@@ -46,7 +46,7 @@ const int ENEMY_STEP_HEIGHT = 10;
 const int TICS_PER_ENEMY_GRID_STEP = 50;
 
 // Scores
-const int SCORE_ENEMY = 100;
+const int SCORE_ENEMY = 50;
 
 // Constantes para las balas
 const int BULLET_WIDTH = 6;
