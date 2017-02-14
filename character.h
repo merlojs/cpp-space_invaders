@@ -8,9 +8,7 @@ class Character : public Collidable
 {
     protected:
         ALLEGRO_BITMAP* characterSprite;
-        Point pos;
 		Point previousPos;
-        Bounds bounds;
         Velocity velocity;
 
     public: // Métodos

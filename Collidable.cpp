@@ -3,7 +3,6 @@
 Collidable::Collidable(Point position, Bounds bounds) :
 	pos(position), bounds(bounds)
 {
-
 }
 
 Collidable::~Collidable() {

@@ -3,9 +3,11 @@
 using namespace std;
 
 Character::Character(ALLEGRO_BITMAP* sprite, Point startingPos, Bounds dimensions) :
-	Collidable(startingPos, dimensions), characterSprite(sprite), previousPos(startingPos) {
+	Collidable(startingPos, dimensions)/*, characterSprite(sprite)*/, previousPos(startingPos) {
 	this->velocity.x = 0;
 	this->velocity.y = 0;
+
+	this->characterSprite = sprite;
 }
 
 Character::~Character() {
