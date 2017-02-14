@@ -4,11 +4,14 @@
 #include "Character.h"
 
 class EnemyCharacter : public Character {
+protected:
+	int killScore;
 public:
-	EnemyCharacter(ALLEGRO_BITMAP* sprite, Point startingPos, Bounds dimensions);
+	EnemyCharacter(ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP *bulletSprite, Point startingPos, Bounds dimensions, int killScore);
 	~EnemyCharacter();
 
 	void processInput(GameInput *playerInput);
+	int getKillScore();
 };
 
 #endif // ENEMY_CHARACTER_H

@@ -2,12 +2,15 @@
 
 using namespace std;
 
-Character::Character(ALLEGRO_BITMAP* sprite, Point startingPos, Bounds dimensions) :
-	Collidable(startingPos, dimensions)/*, characterSprite(sprite)*/, previousPos(startingPos) {
+Character::Character(ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP *bulletSprite, Point startingPos, Bounds dimensions) :
+	Collidable(startingPos, dimensions) {
 	this->velocity.x = 0;
 	this->velocity.y = 0;
 
 	this->characterSprite = sprite;
+	this->bulletSprite = bulletSprite;
+
+	this->previousPos = startingPos;
 }
 
 Character::~Character() {
@@ -16,6 +19,10 @@ Character::~Character() {
 
 Point Character::getPreviousPos() {
 	return this->previousPos;
+}
+
+bool Character::isAlive() {
+	return this->alive;
 }
 
 void Character::draw(){
@@ -36,8 +43,29 @@ void Character::updatePosition() {
 void Character::resetPosition() {
 	this->pos = this->previousPos;
 }
-/*
-void Character::shoot() {
 
+void Character::kill() {
+	this->alive = false;
 }
-*/
+
+Bullet * Character::shoot() {
+	Velocity bulletVelocity;
+
+	if (shotDirection == UP) {
+		bulletVelocity.y = -BULLET_SPEED;
+	}
+	else {
+		bulletVelocity.y = BULLET_SPEED;
+	}
+
+	Point startingPos;
+	startingPos.x = this->pos.x + this->bounds.w / 2;
+	startingPos.y = this->pos.y;
+
+	Bounds bulletBounds;
+	bulletBounds.w = BULLET_WIDTH;
+	bulletBounds.h = BULLET_HEIGHT;
+
+	return new Bullet(this->bulletSprite, startingPos, bulletBounds, bulletVelocity);
+}
+

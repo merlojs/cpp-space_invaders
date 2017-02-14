@@ -82,7 +82,7 @@ int main()
     ALLEGRO_BITMAP *background = al_load_bitmap("Recursos/fondo.bmp");
     // ALLEGRO_BITMAP *shields = al_load_bitmap("Recursos/escudos.bmp");
     // ALLEGRO_BITMAP *game_over = al_load_bitmap("Recursos/GameOver.bmp");
-	ALLEGRO_BITMAP *spriteBullet = al_load_bitmap("Recursos/bala.bmp");
+	ALLEGRO_BITMAP *spriteBullet = al_load_bitmap("Recursos/Bala2.bmp");
 	
 	ALLEGRO_SAMPLE *song = al_load_sample("Recursos/Retribution.ogg");
 	
@@ -142,9 +142,18 @@ int main()
     startingPos.x = SCREEN_WIDTH / 2 - playerBounds.w / 2;
     startingPos.y = SCREEN_HEIGHT - 70;
 
-	PlayerCharacter *player = new PlayerCharacter(spriteShip, startingPos, playerBounds);
+	PlayerCharacter *player = new PlayerCharacter(spriteShip, spriteBullet, startingPos, playerBounds);
+	EnemyGrid *enemyGrid = new EnemyGrid(ENEMY_GRID_WIDTH, ENEMY_GRID_HEIGHT, spriteEnemy, spriteBullet);
+	BulletManager *bulletManager = new BulletManager();
+	ScoreBoard *scoreBoard = new ScoreBoard();
 
-	EnemyGrid *enemyGrid = new EnemyGrid(ENEMY_GRID_WIDTH, ENEMY_GRID_HEIGHT, spriteEnemy);
+	// TODO: Eliminar código de enemigo generado específicamente para testear colisiones
+	startingPos.x += 50;
+	EnemyCharacter *collisionTest = new EnemyCharacter(spriteEnemy, spriteBullet, startingPos, playerBounds, SCORE_ENEMY);
+
+	al_convert_mask_to_alpha(spriteShip, al_map_rgb(255, 0, 255));
+	al_convert_mask_to_alpha(spriteEnemy, al_map_rgb(255, 0, 255));
+	al_convert_mask_to_alpha(spriteBullet, al_map_rgb(255, 0, 255));
     al_convert_mask_to_alpha(background, al_map_rgb(255, 0 , 255));  //HACE INVISIBLE EL COLOR MAGENTA
     //al_draw_bitmap(background,0,0,0);
 
@@ -173,25 +182,37 @@ int main()
 		// TODO: Agregar tope de FPS
 			// Fin de procesamiento de eventos
 			// Procesar el input
-			player->processInput(playerInput);
+			player->processInput(playerInput, bulletManager);
 			player->updatePosition();
 			enemyGrid->updatePosition();
+			bulletManager->updateBulletsPosition();
+
+			// Chequeo de colisiones
+			bulletManager->checkPlayerBulletCollisions(enemyGrid, scoreBoard);
+			// TODO: Eliminar enemigo generado específicamente para testear colisiones
+			/*collisionTest->draw();
+			if (player->isColliding(collisionTest)) {
+			cout << "Colliding = 1" << endl;
+			}
+			/*else {
+			cout << "Colliding = 0" << endl;
+			}*/
+			// Fin del chequeo de colisiones
 
 			// Limite para que la nave del jugador no pueda salir de la pantalla
 			if (player->getPos().x < SCREEN_LEFT || player->getPos().x + player->getBounds().w > SCREEN_RIGHT) {
 				player->resetPosition();
 			}
 
-			// Chequeo de colisiones
-			//player->chequeoColisiones()
-
 			// Dibujado
 			if (redraw) {
 				al_clear_to_color(al_map_rgb(0, 0, 0));
 				al_draw_bitmap(background, 0, 0, 0);
-				player->draw();
-
 				enemyGrid->draw();
+				player->draw();
+				bulletManager->draw();
+				scoreBoard->draw();
+
 				enemyGrid->debugDraw();
 
 				al_flip_display(); //si no se ve blanco

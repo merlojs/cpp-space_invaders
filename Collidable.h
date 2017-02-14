@@ -11,6 +11,7 @@ class Collidable
 
 	public:
 		Collidable(Point pos, Bounds bounds);
+		Collidable(int x, int y, int w, int h);
 		~Collidable();
 
 		bool isColliding(Collidable *collidable);

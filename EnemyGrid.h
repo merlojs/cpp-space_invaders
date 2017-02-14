@@ -14,8 +14,11 @@ class EnemyGrid {
 		int prevDirection;
 		int framesSinceLastStep;
 	public:
-		EnemyGrid(int width, int height, ALLEGRO_BITMAP *enemySprite);
+		EnemyGrid(int width, int height, ALLEGRO_BITMAP *enemySprite, ALLEGRO_BITMAP *bulletSprite);
 		~EnemyGrid();
+
+		vector<vector<EnemyCharacter *> *> *getEnemies();
+
 		void updatePosition();
 
 		void draw();

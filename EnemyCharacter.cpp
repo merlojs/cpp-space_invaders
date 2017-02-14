@@ -3,10 +3,16 @@
 
 using namespace std;
 
-EnemyCharacter::EnemyCharacter(ALLEGRO_BITMAP* sprite, Point startingPos, Bounds dimensions) :
-	Character(sprite, startingPos, dimensions) {
+EnemyCharacter::EnemyCharacter(ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP *bulletSprite, Point startingPos, Bounds dimensions, int killScore) :
+	Character(sprite, bulletSprite, startingPos, dimensions) {
+	this->shotDirection = DOWN;
+	this->killScore = killScore;
 }
 
 EnemyCharacter::~EnemyCharacter() {
 
+}
+
+int EnemyCharacter::getKillScore() {
+	return this->killScore;
 }

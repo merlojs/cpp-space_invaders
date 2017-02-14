@@ -1,22 +1,19 @@
 #ifndef BULLET_H
 #define BULLET_H
 
-#include "Character.h"
+#include "Collidable.h"
 
-class Bullet
+class Bullet : public Collidable
 {
 protected:
 	ALLEGRO_BITMAP* bulletSprite;
-	Point pos;
-	Bounds bounds;
 	Velocity velocity;
 
 public: // Métodos
-	Bullet(ALLEGRO_BITMAP* sprite, Point startingPos, Bounds bounds);
+	Bullet(ALLEGRO_BITMAP* sprite, Point startingPos, Bounds bounds, Velocity velocity);
 	~Bullet();
 
 	Point getPos();
-	void setVelocity(Velocity v);
 
 	void updatePosition();
 	void draw();

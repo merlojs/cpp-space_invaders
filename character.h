@@ -3,16 +3,20 @@
 
 #include "header.h"
 #include "Collidable.h"
+#include "Bullet.h"
 
 class Character : public Collidable
 {
     protected:
         ALLEGRO_BITMAP* characterSprite;
+		ALLEGRO_BITMAP *bulletSprite;
 		Point previousPos;
         Velocity velocity;
 
+		int shotDirection;
+		bool alive;
     public: // Métodos
-        Character(ALLEGRO_BITMAP* sprite, Point startingPos, Bounds bounds);
+		Character(ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP *bulletSprite, Point startingPos, Bounds bounds);
         ~Character();
 
 		Point getPreviousPos();
@@ -23,8 +27,10 @@ class Character : public Collidable
         void updatePosition();
         void draw();
 
-		/* los enemigos disparan? por las dudas lo dejo aca */
-//		void shoot();
+		bool isAlive();
+		void kill();
+
+		Bullet *shoot();
 };
 
 #endif // CHARACTER_H

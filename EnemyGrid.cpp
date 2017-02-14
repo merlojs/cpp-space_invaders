@@ -1,7 +1,7 @@
 #include "EnemyGrid.h"
 #include <iostream>
 
-EnemyGrid::EnemyGrid(int width, int height, ALLEGRO_BITMAP *enemySprite) {
+EnemyGrid::EnemyGrid(int width, int height, ALLEGRO_BITMAP *enemySprite, ALLEGRO_BITMAP *bulletSprite) {
 	this->pos.x = ENEMY_GRID_STARTING_X;
 	this->pos.y = ENEMY_GRID_STARTING_Y;
 
@@ -26,8 +26,7 @@ EnemyGrid::EnemyGrid(int width, int height, ALLEGRO_BITMAP *enemySprite) {
 
 		for (int j = 0; j < width; j++) {
 			enemyPos.x = ENEMY_GRID_STARTING_X + j * (ENEMY_SPACING_H + ENEMY_WIDTH);
-
-			enemyRow->push_back(new EnemyCharacter(enemySprite, enemyPos, enemyBounds));
+			enemyRow->push_back(new EnemyCharacter(enemySprite, bulletSprite, enemyPos, enemyBounds, SCORE_ENEMY));
 		}
 
 		this->enemies->push_back(enemyRow);
@@ -87,11 +86,17 @@ void EnemyGrid::draw() {
 		vector<EnemyCharacter *> *enemyRow = (*it);
 
 		for (vector<EnemyCharacter *>::iterator it2 = enemyRow->begin(); it2 != enemyRow->end(); it2++) {
-			(*it2)->draw();
+			if ((*it2)->isAlive()) {
+				(*it2)->draw();
+			}
 		}
 	}
 }
 
 void EnemyGrid::debugDraw() {
 	al_draw_rectangle(this->pos.x, this->pos.y, this->pos.x + this->bounds.w, this->pos.y + this->bounds.h, al_map_rgb(255, 0, 0), 3);
+}
+
+vector<vector<EnemyCharacter *> *> *EnemyGrid::getEnemies() {
+	return this->enemies;
 }

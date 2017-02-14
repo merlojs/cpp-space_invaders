@@ -5,6 +5,14 @@ Collidable::Collidable(Point position, Bounds bounds) :
 {
 }
 
+Collidable::Collidable(int x, int y, int w, int h) {
+	this->pos.x = x;
+	this->pos.y = y;
+
+	this->bounds.w = w;
+	this->bounds.h = h;
+}
+
 Collidable::~Collidable() {
 
 }
