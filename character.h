@@ -29,6 +29,7 @@ class Character : public Collidable
 
 		bool isAlive();
 		void kill();
+		void explode();
 
 		Bullet *shoot();
 };

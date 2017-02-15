@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <time.h>
-
+#include <string>
 #include "allegro_inc.h"
 
 using namespace std;
@@ -76,6 +76,8 @@ struct GameInput {
 	bool left;
 	bool action;
 	bool escape;
+	bool enter;
+	bool replay;
 };
 
 enum MOVE_DIR {

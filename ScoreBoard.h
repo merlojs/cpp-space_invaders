@@ -7,8 +7,10 @@ class ScoreBoard
 {
 	private:
 		int points;
+		ALLEGRO_FONT *font;
+		//PlayerCharacter *playerCharacter;
 public:
-	ScoreBoard();
+	ScoreBoard(ALLEGRO_FONT *font);
 	~ScoreBoard();
 
 	void addPoints(int points);

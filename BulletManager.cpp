@@ -59,6 +59,10 @@ void BulletManager::checkPlayerBulletCollisions(EnemyGrid *enemyGrid, ScoreBoard
 				if ((*it2)->isAlive() && (*it2)->isColliding(playerBullet)) {
 					(*it2)->kill();
 					// TODO: Animar explosion y esas cosas
+					(*it2)->explode(); // hay que ver como se le pasa la explosion para que finalmente desaparezca
+					//dependiendo si son enemigos o naves
+					// lo mismo quiza funciona para animar los bichos
+
 					scoreBoard->addPoints((*it2)->getKillScore());
 					this->playerBullet = 0;
 					return;

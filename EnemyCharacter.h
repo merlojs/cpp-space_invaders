@@ -10,7 +10,6 @@ public:
 	EnemyCharacter(ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP *bulletSprite, Point startingPos, Bounds dimensions, int killScore);
 	~EnemyCharacter();
 
-	void processInput(GameInput *playerInput);
 	int getKillScore();
 };
 

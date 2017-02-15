@@ -5,13 +5,20 @@
 #include "PlayerCharacter.h"
 #include "EnemyGrid.h"
 #include "EnemyCharacter.h"
+#include "Marquee.h"
+
+
+bool doexit = false;
+bool start = false;
+
+//TODO: esto esta forzado para game over, cambiar!!!
+bool finished = true;
 
 int main()
 {
     ALLEGRO_DISPLAY *display = NULL;
     ALLEGRO_EVENT_QUEUE *event_queue = NULL;
     ALLEGRO_TIMER *timer = NULL;
-    bool doexit = false;
 
     /* START ALLEGRO LIBRARY */
    if(!al_init()) {
@@ -53,9 +60,13 @@ int main()
         return false;
     }
 
-	// initialize the font addon
-	// TODO: Agregar fuentes para escribir
-	al_init_font_addon();
+	/* FONTS */
+	al_init_font_addon();	
+
+	if (!al_init_ttf_addon()) {
+		fprintf(stderr, "Failed to initialize the ttf addon!\n");
+		return false;
+	}
 
     /* AUDIO */
 
@@ -77,16 +88,27 @@ int main()
 	GameInput input = {};
 	GameInput *playerInput = &input;
 
-    // ALLEGRO_COLOR black = al_map_rgb(0, 0, 0);
 
     // ALLEGRO_BITMAP *buffer = al_create_bitmap(448,518);
     ALLEGRO_BITMAP *spriteShip = al_load_bitmap("Recursos/nave.bmp");
 	ALLEGRO_BITMAP *spriteEnemy = al_load_bitmap("Recursos/enemigos.bmp");
-    // ALLEGRO_BITMAP *portada = al_load_bitmap("Recursos/portada.bmp");
+    ALLEGRO_BITMAP *marquee = al_load_bitmap("Recursos/portada.bmp");
     ALLEGRO_BITMAP *background = al_load_bitmap("Recursos/fondo.bmp");
     // ALLEGRO_BITMAP *shields = al_load_bitmap("Recursos/escudos.bmp");
-    // ALLEGRO_BITMAP *game_over = al_load_bitmap("Recursos/GameOver.bmp");
+    ALLEGRO_BITMAP *gameOver = al_load_bitmap("Recursos/GameOver.bmp");
 	ALLEGRO_BITMAP *spriteBullet = al_load_bitmap("Recursos/Bala2.bmp");
+	
+
+	// Load fonts
+	
+	ALLEGRO_FONT * scoreFont = al_load_ttf_font("Recursos/emulogic.ttf", 10, 0);
+
+	
+	if (!scoreFont) {
+		fprintf(stderr, "Could not load 'emulogic.ttf'.\n");
+		return -1;
+	}
+
 	
 	ALLEGRO_SAMPLE *song = al_load_sample("Recursos/Retribution.ogg");
 
@@ -130,10 +152,7 @@ int main()
 
     /* START TIMER */
     al_start_timer(timer);
-
-	// al_convert_mask_to_alpha(this->characterSprite, al_map_rgb(255, 0 , 255));
-
-    //al_set_target_bitmap(background);
+	
     al_set_target_bitmap(al_get_backbuffer(display));
     al_clear_to_color(al_map_rgb(0,0,0));
 
@@ -149,7 +168,7 @@ int main()
 	PlayerCharacter *player = new PlayerCharacter(spriteShip, spriteBullet, startingPos, playerBounds);
 	EnemyGrid *enemyGrid = new EnemyGrid(ENEMY_GRID_WIDTH, ENEMY_GRID_HEIGHT, spriteEnemy, spriteBullet);
 	BulletManager *bulletManager = new BulletManager();
-	ScoreBoard *scoreBoard = new ScoreBoard();
+	ScoreBoard *scoreBoard = new ScoreBoard(scoreFont);
 
 	// TODO: Eliminar código de enemigo generado específicamente para testear colisiones
 	startingPos.x += 50;
@@ -159,10 +178,82 @@ int main()
 	al_convert_mask_to_alpha(spriteEnemy, al_map_rgb(255, 0, 255));
 	al_convert_mask_to_alpha(spriteBullet, al_map_rgb(255, 0, 255));
     al_convert_mask_to_alpha(background, al_map_rgb(255, 0 , 255));  //HACE INVISIBLE EL COLOR MAGENTA
-    //al_draw_bitmap(background,0,0,0);
+
+	/* INTRO SCREEN */
+
+	int flicker = 0;
+
+	while (!start && !doexit && !finished) {		
+
+		ALLEGRO_EVENT ev;
+		ALLEGRO_TIMEOUT timeout;   // Wait time for an event to occur
+		al_init_timeout(&timeout, 0.06);
+
+		// Procesamiento de eventos
+		bool get_event = al_wait_for_event_until(event_queue, &ev, &timeout);
+
+		if (get_event) {
+			if (get_event && ev.type == ALLEGRO_EVENT_TIMER) {
+				//redraw = true;
+			}
+			else if (get_event && ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+				doexit = true;
+			}
+			else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
+				keyboardEventHandler(true, ev.keyboard.keycode, playerInput);
+			}
+			else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+				keyboardEventHandler(false, ev.keyboard.keycode, playerInput);
+			}
+		}
+		
+		if (flicker < 25) {
+			al_draw_bitmap_region(marquee, 0, 0, 600, 600, 0, 0, 0);
+			al_flip_display();
+		}
+		else {
+			al_draw_bitmap_region(marquee, 600, 0, 600, 600, 0, 0, 0);
+			al_flip_display();
+		}		
+
+		if (++flicker == 50) {
+			flicker = 0;
+		}
+	}
+	
+	/* GAME OVER SCREEN */
+
+	while (finished && !doexit && !start) {
+
+		ALLEGRO_EVENT ev;
+		ALLEGRO_TIMEOUT timeout;   // Wait time for an event to occur
+		al_init_timeout(&timeout, 0.06);
+
+		// Procesamiento de eventos
+		bool get_event = al_wait_for_event_until(event_queue, &ev, &timeout);
+
+		if (get_event) {
+			if (get_event && ev.type == ALLEGRO_EVENT_TIMER) {
+				//redraw = true;
+			}
+			else if (get_event && ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+				doexit = true;
+			}
+			else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
+				keyboardEventHandler(true, ev.keyboard.keycode, playerInput);
+			}
+			else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+				keyboardEventHandler(false, ev.keyboard.keycode, playerInput);
+			}
+		}
+		al_draw_bitmap_region(gameOver, 0, 0, 600, 600, 0, 0, 0);
+		al_flip_display();
+	}
+
 
    /* GAME ROUTINE */
-    while(!doexit){
+
+    while(start && !doexit){
         bool redraw = false;
         ALLEGRO_EVENT ev;
         ALLEGRO_TIMEOUT timeout;   // Wait time for an event to occur
@@ -180,7 +271,7 @@ int main()
                 keyboardEventHandler(true, ev.keyboard.keycode, playerInput);
             } else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
                 keyboardEventHandler(false, ev.keyboard.keycode, playerInput);
-            }
+            } 
         }
 
 		// TODO: Agregar tope de FPS
@@ -240,6 +331,7 @@ void keyboardEventHandler(bool keyUp, int keyCode, GameInput *playerInput) {
     if (keyUp){
         if (keyCode == ALLEGRO_KEY_ESCAPE) {
           playerInput->escape = false;
+		  doexit = true;
         }
 
         if (keyCode == ALLEGRO_KEY_UP) {
@@ -261,9 +353,21 @@ void keyboardEventHandler(bool keyUp, int keyCode, GameInput *playerInput) {
         if (keyCode == ALLEGRO_KEY_RIGHT) {
           playerInput->right = false;
         }
+
+		if (keyCode == ALLEGRO_KEY_ENTER) {
+			playerInput->enter = true;
+			start = true;
+		}
+
+		if (keyCode == ALLEGRO_KEY_R) {
+			playerInput->replay = true;
+			finished = false;
+			start = true; //ver
+		}
     } else {
         if (keyCode == ALLEGRO_KEY_ESCAPE) {
           playerInput->escape = true;
+		  doexit = true;
         }
         if (keyCode == ALLEGRO_KEY_UP) {
           playerInput->up = true;
@@ -284,5 +388,16 @@ void keyboardEventHandler(bool keyUp, int keyCode, GameInput *playerInput) {
         if (keyCode == ALLEGRO_KEY_RIGHT) {
           playerInput->right = true;
         }
+
+		if (keyCode == ALLEGRO_KEY_ENTER) {
+			playerInput->enter = true;
+			start = false;
+		}
+
+		if (keyCode == ALLEGRO_KEY_R) {
+			playerInput->replay = true;
+			finished = false;
+			start = true; 
+		}
     }
 }
