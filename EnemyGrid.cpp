@@ -5,8 +5,13 @@ EnemyGrid::EnemyGrid(int width, int height, ALLEGRO_BITMAP *enemySprite, ALLEGRO
 	this->pos.x = ENEMY_GRID_STARTING_X;
 	this->pos.y = ENEMY_GRID_STARTING_Y;
 
-	this->bounds.w = (ENEMY_WIDTH + ENEMY_SPACING_H) * width;
-	this->bounds.h = (ENEMY_HEIGHT + ENEMY_SPACING_V) * height;
+	this->enemyCount.w = width;
+	this->enemyCount.h = height;
+
+	remainingEnemies = this->enemyCount.w * this->enemyCount.h;
+
+	this->bounds.w = (ENEMY_WIDTH + ENEMY_SPACING_H) * this->enemyCount.w;
+	this->bounds.h = (ENEMY_HEIGHT + ENEMY_SPACING_V) * this->enemyCount.h;
 
 	this->direction = RIGHT;
 	this->prevDirection = this->direction;
@@ -20,12 +25,12 @@ EnemyGrid::EnemyGrid(int width, int height, ALLEGRO_BITMAP *enemySprite, ALLEGRO
 
 	this->enemies = new vector<vector<EnemyCharacter *> *>();
 
-	for (int i = 0; i < height; i++) {
+	for (int i = 0; i < this->enemyCount.h; i++) {
 		vector<EnemyCharacter *> *enemyRow = new vector < EnemyCharacter * > ;
 		Point enemyPos = {};
 		enemyPos.y = ENEMY_GRID_STARTING_Y + i * (ENEMY_SPACING_V + ENEMY_HEIGHT);
 
-		for (int j = 0; j < width; j++) {
+		for (int j = 0; j < this->enemyCount.w; j++) {
 			enemyPos.x = ENEMY_GRID_STARTING_X + j * (ENEMY_SPACING_H + ENEMY_WIDTH);
 			enemyRow->push_back(new EnemyCharacter(enemySprite, bulletSprite, enemyPos, enemyBounds, SCORE_ENEMY));
 		}
@@ -142,4 +147,36 @@ Point EnemyGrid::getPos() {
 
 Bounds EnemyGrid::getBounds() {
 	return this->bounds;
+}
+
+void EnemyGrid::enemyKilled() {
+	this->remainingEnemies -= 1;
+	this->recalculateHeight();
+}
+
+int EnemyGrid::getRemainingEnemies() {
+	return this->remainingEnemies;
+}
+
+void EnemyGrid::recalculateHeight() {
+	bool endCheck = false;
+	int emptyRowCount = 0;
+
+	for (vector<vector<EnemyCharacter *> *>::reverse_iterator it = this->enemies->rbegin(); it != this->enemies->rend(); it++) {
+		vector<EnemyCharacter *> *enemyRow = (*it);
+		for (vector<EnemyCharacter *>::iterator it2 = enemyRow->begin(); it2 != enemyRow->end(); it2++) {
+			if ((*it2)->isAlive()) {
+				endCheck = true;
+				break;
+			}
+		}
+
+		if (endCheck) {
+			break;
+		}
+		emptyRowCount++;
+	}
+
+	this->bounds.h = (ENEMY_HEIGHT + ENEMY_SPACING_V) * (this->enemyCount.h - emptyRowCount);
+
 }

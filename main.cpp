@@ -92,6 +92,7 @@ int main()
     ALLEGRO_BITMAP *gameOver = al_load_bitmap("Recursos/GameOver.bmp");
 	ALLEGRO_BITMAP *spriteBullet = al_load_bitmap("Recursos/Bala2.bmp");
 	ALLEGRO_BITMAP *spriteEnemyBullet = al_load_bitmap("Recursos/BalaE.bmp");
+	ALLEGRO_BITMAP *victoryScreen = al_load_bitmap("Recursos/Victory.bmp");
 	
 
 	// Load fonts
@@ -226,6 +227,9 @@ int main()
 				}
 				break;
 			case ST_INGAME:
+				if (playerInput->replay) {
+					gameState = ST_VICTORY;
+				}
 				if (scoreBoard->getLives() == 0) {
 					gameState = ST_GAME_OVER;
 				}
@@ -258,6 +262,10 @@ int main()
 					gameState = ST_PLAYER_KILLED;
 				}
 
+				if (enemyGrid->getRemainingEnemies() == 0) {
+					gameState = ST_VICTORY;
+				}
+
 				// Dibujado
 				if (redraw) {
 					al_clear_to_color(al_map_rgb(0, 0, 0));
@@ -283,6 +291,10 @@ int main()
 					gameState = ST_INGAME;
 				}
 
+				break;
+			case ST_VICTORY:
+				al_draw_bitmap_region(victoryScreen, 0, 0, 600, 600, 0, 0, 0);
+				al_flip_display();
 				break;
 			case ST_GAME_OVER:
 				al_draw_bitmap_region(gameOver, 0, 0, 600, 600, 0, 0, 0);

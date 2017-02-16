@@ -1,7 +1,6 @@
 #ifndef HEADER_INC
 #define HEADER_INC
 
-// TODO: Separar en otro archivo?
 #include <vector>
 #include <stdlib.h>
 #include <stdio.h>
@@ -94,7 +93,7 @@ enum MOVE_DIR {
 };
 
 enum GAME_STATE {
-	ST_SPLASH_SCREEN, ST_INGAME, ST_PLAYER_KILLED, ST_GAME_OVER
+	ST_SPLASH_SCREEN, ST_INGAME, ST_PLAYER_KILLED, ST_VICTORY, ST_GAME_OVER
 };
 
 void keyboardEventHandler(bool keyUp, int keyCode, GameInput *playerInput);

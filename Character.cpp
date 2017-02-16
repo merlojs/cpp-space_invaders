@@ -48,10 +48,6 @@ void Character::kill() {
 	this->alive = false;
 }
 
-void Character::explode() {
-
-}
-
 Bullet * Character::shoot() {
 	Velocity bulletVelocity;
 

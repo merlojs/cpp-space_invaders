@@ -8,8 +8,10 @@ class EnemyGrid {
 	private:
 		Point pos;
 		Bounds bounds;
+		Bounds enemyCount;
 		vector<vector<EnemyCharacter *> *> *enemies;
 
+		int remainingEnemies;
 		int direction;
 		int prevDirection;
 		int framesSinceLastStep;
@@ -23,7 +25,10 @@ class EnemyGrid {
 
 		void updatePosition();
 		void resetEnemyPositions();
+		void recalculateHeight();
+		void enemyKilled();
 
+		int getRemainingEnemies();
 		Point getPos();
 		Bounds getBounds();
 
