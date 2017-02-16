@@ -12,6 +12,7 @@ EnemyGrid::EnemyGrid(int width, int height, ALLEGRO_BITMAP *enemySprite, ALLEGRO
 	this->prevDirection = this->direction;
 
 	this->framesSinceLastStep = 0;
+	this->framesSinceLastShot = 0;
 
 	Bounds enemyBounds = {};
 	enemyBounds.w = ENEMY_WIDTH;
@@ -39,6 +40,8 @@ EnemyGrid::~EnemyGrid() {
 
 void EnemyGrid::updatePosition() {
 	if (this->framesSinceLastStep < TICS_PER_ENEMY_GRID_STEP) {
+		this->framesSinceLastShot++;
+
 		this->framesSinceLastStep++;
 	}
 	else {
@@ -91,6 +94,16 @@ void EnemyGrid::draw() {
 			}
 		}
 	}
+}
+
+EnemyCharacter *EnemyGrid::getShooter() {
+	// Determinar si dispara (tope de balas en vuelo, tiempo)
+	srand(time(NULL));
+
+	int yIndex = 1 + rand() % ENEMY_GRID_HEIGHT;
+	int xIndex = 1 + rand() % ENEMY_GRID_WIDTH;
+
+	return this->enemies->at(yIndex)->at(xIndex);
 }
 
 void EnemyGrid::debugDraw() {

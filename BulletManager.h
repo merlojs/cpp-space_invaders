@@ -24,6 +24,7 @@ public:
 	Bullet *getPlayerBullet();
 
 	void checkPlayerBulletCollisions(EnemyGrid *enemyGrid, ScoreBoard *scoreBoard);
+	void checkEnemyBulletCollisions(Character *playerCharacter, ScoreBoard *scoreBoard);
 	void updateBulletsPosition();
 
 	void draw();

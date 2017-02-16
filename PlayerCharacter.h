@@ -12,7 +12,6 @@ private:
 		~PlayerCharacter();
 
 		void processInput(GameInput *playerInput, BulletManager *bulletManager);
-		int getLives();
 };
 
 #endif // PLAYER_CHARACTER_H

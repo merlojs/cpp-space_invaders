@@ -8,12 +8,6 @@
 #include "Marquee.h"
 
 
-bool doexit = false;
-bool start = false;
-
-//TODO: esto esta forzado para game over, cambiar!!!
-bool finished = true;
-
 int main()
 {
     ALLEGRO_DISPLAY *display = NULL;
@@ -156,6 +150,10 @@ int main()
     al_set_target_bitmap(al_get_backbuffer(display));
     al_clear_to_color(al_map_rgb(0,0,0));
 
+	int gameState = ST_SPLASH_SCREEN;
+	int splashScreenFlicker = 0;
+	bool doexit = false;
+
     /* GAME CHARACTERS */
     Bounds playerBounds = {};
     playerBounds.w = 28;
@@ -163,97 +161,21 @@ int main()
 
     Point startingPos = {};
     startingPos.x = SCREEN_WIDTH / 2 - playerBounds.w / 2;
-    startingPos.y = SCREEN_HEIGHT - 70;
+    startingPos.y = SCREEN_HEIGHT - 100;
 
 	PlayerCharacter *player = new PlayerCharacter(spriteShip, spriteBullet, startingPos, playerBounds);
 	EnemyGrid *enemyGrid = new EnemyGrid(ENEMY_GRID_WIDTH, ENEMY_GRID_HEIGHT, spriteEnemy, spriteBullet);
 	BulletManager *bulletManager = new BulletManager();
 	ScoreBoard *scoreBoard = new ScoreBoard(scoreFont);
 
-	// TODO: Eliminar código de enemigo generado específicamente para testear colisiones
-	startingPos.x += 50;
-	EnemyCharacter *collisionTest = new EnemyCharacter(spriteEnemy, spriteBullet, startingPos, playerBounds, SCORE_ENEMY);
-
 	al_convert_mask_to_alpha(spriteShip, al_map_rgb(255, 0, 255));
 	al_convert_mask_to_alpha(spriteEnemy, al_map_rgb(255, 0, 255));
 	al_convert_mask_to_alpha(spriteBullet, al_map_rgb(255, 0, 255));
     al_convert_mask_to_alpha(background, al_map_rgb(255, 0 , 255));  //HACE INVISIBLE EL COLOR MAGENTA
 
-	/* INTRO SCREEN */
-
-	int flicker = 0;
-
-	while (!start && !doexit && !finished) {		
-
-		ALLEGRO_EVENT ev;
-		ALLEGRO_TIMEOUT timeout;   // Wait time for an event to occur
-		al_init_timeout(&timeout, 0.06);
-
-		// Procesamiento de eventos
-		bool get_event = al_wait_for_event_until(event_queue, &ev, &timeout);
-
-		if (get_event) {
-			if (get_event && ev.type == ALLEGRO_EVENT_TIMER) {
-				//redraw = true;
-			}
-			else if (get_event && ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-				doexit = true;
-			}
-			else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
-				keyboardEventHandler(true, ev.keyboard.keycode, playerInput);
-			}
-			else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-				keyboardEventHandler(false, ev.keyboard.keycode, playerInput);
-			}
-		}
-		
-		if (flicker < 25) {
-			al_draw_bitmap_region(marquee, 0, 0, 600, 600, 0, 0, 0);
-			al_flip_display();
-		}
-		else {
-			al_draw_bitmap_region(marquee, 600, 0, 600, 600, 0, 0, 0);
-			al_flip_display();
-		}		
-
-		if (++flicker == 50) {
-			flicker = 0;
-		}
-	}
-	
-	/* GAME OVER SCREEN */
-
-	while (finished && !doexit && !start) {
-
-		ALLEGRO_EVENT ev;
-		ALLEGRO_TIMEOUT timeout;   // Wait time for an event to occur
-		al_init_timeout(&timeout, 0.06);
-
-		// Procesamiento de eventos
-		bool get_event = al_wait_for_event_until(event_queue, &ev, &timeout);
-
-		if (get_event) {
-			if (get_event && ev.type == ALLEGRO_EVENT_TIMER) {
-				//redraw = true;
-			}
-			else if (get_event && ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-				doexit = true;
-			}
-			else if (ev.type == ALLEGRO_EVENT_KEY_UP) {
-				keyboardEventHandler(true, ev.keyboard.keycode, playerInput);
-			}
-			else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-				keyboardEventHandler(false, ev.keyboard.keycode, playerInput);
-			}
-		}
-		al_draw_bitmap_region(gameOver, 0, 0, 600, 600, 0, 0, 0);
-		al_flip_display();
-	}
-
-
    /* GAME ROUTINE */
 
-    while(start && !doexit){
+    while(!doexit){
         bool redraw = false;
         ALLEGRO_EVENT ev;
         ALLEGRO_TIMEOUT timeout;   // Wait time for an event to occur
@@ -273,46 +195,74 @@ int main()
                 keyboardEventHandler(false, ev.keyboard.keycode, playerInput);
             } 
         }
+		// Fin de procesamiento de eventos
+		// Procesamiento de teclado para controles globales de la aplicacion
+		if (playerInput->escape) {
+			doexit = true;
+			break;
+		}
 
-		// TODO: Agregar tope de FPS
-			// Fin de procesamiento de eventos
-			// Procesar el input
-			player->processInput(playerInput, bulletManager);
-			player->updatePosition();
-			enemyGrid->updatePosition();
-			bulletManager->updateBulletsPosition();
+		switch (gameState) {
+			case ST_SPLASH_SCREEN:
+				if (playerInput->enter) {
+					gameState = ST_INGAME;
+				}
 
-			// Chequeo de colisiones
-			bulletManager->checkPlayerBulletCollisions(enemyGrid, scoreBoard);
-			// TODO: Eliminar enemigo generado específicamente para testear colisiones
-			/*collisionTest->draw();
-			if (player->isColliding(collisionTest)) {
-			cout << "Colliding = 1" << endl;
-			}
-			/*else {
-			cout << "Colliding = 0" << endl;
-			}*/
-			// Fin del chequeo de colisiones
+				if (splashScreenFlicker < 25) {
+					al_draw_bitmap_region(marquee, 0, 0, 600, 600, 0, 0, 0);
+					al_flip_display();
+				}
+				else {
+					al_draw_bitmap_region(marquee, 600, 0, 600, 600, 0, 0, 0);
+					al_flip_display();
+				}
 
-			// Limite para que la nave del jugador no pueda salir de la pantalla
-			if (player->getPos().x < SCREEN_LEFT || player->getPos().x + player->getBounds().w > SCREEN_RIGHT) {
-				player->resetPosition();
-			}
+				if (++splashScreenFlicker == 50) {
+					splashScreenFlicker = 0;
+				}
+				break;
+			case ST_INGAME:
+				if (scoreBoard->getLives() == 0) {
+					gameState = ST_GAME_OVER;
+				}
+			
+				// Procesar el input
+				player->processInput(playerInput, bulletManager);
+				player->updatePosition();
+				enemyGrid->updatePosition();
+				bulletManager->updateBulletsPosition();
 
-			// Dibujado
-			if (redraw) {
-				al_clear_to_color(al_map_rgb(0, 0, 0));
-				al_draw_bitmap(background, 0, 0, 0);
-				enemyGrid->draw();
-				player->draw();
-				bulletManager->draw();
-				scoreBoard->draw();
+				// Limite para que la nave del jugador no pueda salir de la pantalla
+				if (player->getPos().x < SCREEN_LEFT || player->getPos().x + player->getBounds().w > SCREEN_RIGHT) {
+					player->resetPosition();
+				}
 
-				//enemyGrid->debugDraw();
+				// Chequeo de colisiones
+				bulletManager->checkPlayerBulletCollisions(enemyGrid, scoreBoard);
 
-				al_flip_display(); //si no se ve blanco
-			}
+				// Dibujado
+				if (redraw) {
+					al_clear_to_color(al_map_rgb(0, 0, 0));
+					al_draw_bitmap(background, 0, 0, 0);
+					enemyGrid->draw();
+					player->draw();
+					bulletManager->draw();
+					scoreBoard->draw();
 
+					//enemyGrid->debugDraw();
+
+					al_flip_display(); //si no se ve blanco
+				}
+
+				break;
+			case ST_GAME_OVER:
+				al_draw_bitmap_region(gameOver, 0, 0, 600, 600, 0, 0, 0);
+				al_flip_display();
+				break;
+			default:
+				// ERROR!
+				break;
+		}
     }
 
     al_destroy_timer(timer);
@@ -331,7 +281,6 @@ void keyboardEventHandler(bool keyUp, int keyCode, GameInput *playerInput) {
     if (keyUp){
         if (keyCode == ALLEGRO_KEY_ESCAPE) {
           playerInput->escape = false;
-		  doexit = true;
         }
 
         if (keyCode == ALLEGRO_KEY_UP) {
@@ -356,19 +305,15 @@ void keyboardEventHandler(bool keyUp, int keyCode, GameInput *playerInput) {
 
 		if (keyCode == ALLEGRO_KEY_ENTER) {
 			playerInput->enter = true;
-			start = true;
 		}
 
 		if (keyCode == ALLEGRO_KEY_R) {
 			playerInput->replay = true;
-			finished = false;
-			start = true; //ver
 		}
     } else {
         if (keyCode == ALLEGRO_KEY_ESCAPE) {
           playerInput->escape = true;
-		  doexit = true;
-        }
+		}
         if (keyCode == ALLEGRO_KEY_UP) {
           playerInput->up = true;
         }
@@ -391,13 +336,10 @@ void keyboardEventHandler(bool keyUp, int keyCode, GameInput *playerInput) {
 
 		if (keyCode == ALLEGRO_KEY_ENTER) {
 			playerInput->enter = true;
-			start = false;
 		}
 
 		if (keyCode == ALLEGRO_KEY_R) {
 			playerInput->replay = true;
-			finished = false;
-			start = true; 
 		}
     }
 }

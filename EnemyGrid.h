@@ -13,6 +13,8 @@ class EnemyGrid {
 		int direction;
 		int prevDirection;
 		int framesSinceLastStep;
+		int framesSinceLastShot;
+
 	public:
 		EnemyGrid(int width, int height, ALLEGRO_BITMAP *enemySprite, ALLEGRO_BITMAP *bulletSprite);
 		~EnemyGrid();
@@ -23,6 +25,7 @@ class EnemyGrid {
 
 		void draw();
 		void debugDraw();
+		EnemyCharacter *EnemyGrid::getShooter();
 };
 
 #endif // ENEMY_GRID_H

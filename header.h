@@ -27,7 +27,7 @@ const int SCREEN_LEFT = 50;
 
 // Constantes para la grilla de enemigos
 const int ENEMY_GRID_STARTING_X = 150;
-const int ENEMY_GRID_STARTING_Y = 150;
+const int ENEMY_GRID_STARTING_Y = 200;
 
 const int ENEMY_GRID_WIDTH = 11;
 const int ENEMY_GRID_HEIGHT = 5;
@@ -82,6 +82,10 @@ struct GameInput {
 
 enum MOVE_DIR {
 	UP, RIGHT, DOWN, LEFT
+};
+
+enum GAME_STATE {
+	ST_SPLASH_SCREEN, ST_INGAME, ST_GAME_OVER
 };
 
 void keyboardEventHandler(bool keyUp, int keyCode, GameInput *playerInput);

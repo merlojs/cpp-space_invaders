@@ -49,14 +49,13 @@ Bullet *BulletManager::getPlayerBullet() {
 }
 
 
-
 void BulletManager::checkPlayerBulletCollisions(EnemyGrid *enemyGrid, ScoreBoard *scoreBoard) {
 	if (this->playerBullet) {
 		for (vector<vector<EnemyCharacter *> *>::iterator it = enemyGrid->getEnemies()->begin(); it != enemyGrid->getEnemies()->end(); it++) {
 			vector<EnemyCharacter *> *enemyRow = (*it);
 
 			for (vector<EnemyCharacter *>::iterator it2 = enemyRow->begin(); it2 != enemyRow->end(); it2++) {
-				if ((*it2)->isAlive() && (*it2)->isColliding(playerBullet)) {
+				if ((*it2)->isAlive() && (*it2)->isColliding(this->playerBullet)) {
 					(*it2)->kill();
 					// TODO: Animar explosion y esas cosas
 					(*it2)->explode(); // hay que ver como se le pasa la explosion para que finalmente desaparezca
@@ -68,6 +67,15 @@ void BulletManager::checkPlayerBulletCollisions(EnemyGrid *enemyGrid, ScoreBoard
 					return;
 				}
 			}
+		}
+	}
+}
+
+void BulletManager::checkEnemyBulletCollisions(Character *playerCharacter, ScoreBoard *scoreBoard) {
+	for (vector<Bullet *>::iterator it = this->enemyBullets->begin(); it != this->enemyBullets->end(); it++) {
+		if (playerCharacter->isColliding((*it))) {
+			playerCharacter->kill();
+			scoreBoard->removeLives(1);
 		}
 	}
 }
