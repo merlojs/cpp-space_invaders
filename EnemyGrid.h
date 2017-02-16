@@ -24,6 +24,9 @@ class EnemyGrid {
 		void updatePosition();
 		void resetEnemyPositions();
 
+		Point getPos();
+		Bounds getBounds();
+
 		void draw();
 		void debugDraw();
 		EnemyCharacter *EnemyGrid::getShooter();

@@ -86,6 +86,15 @@ void BulletManager::checkPlayerBulletCollisions(EnemyGrid *enemyGrid, ScoreBoard
 				}
 			}
 		}
+
+		// Chequeo colisiones contra otras balas
+		for (vector<Bullet *>::iterator it = this->enemyBullets->begin(); it != this->enemyBullets->end(); it++) {
+			if (this->playerBullet->isColliding((*it))) {
+				this->enemyBullets->erase(it);
+				this->playerBullet = 0;
+				break;
+			}
+		}
 	}
 }
 
@@ -101,8 +110,9 @@ void BulletManager::shotGenerator(EnemyGrid * enemyGrid) {
 		else if (this->framesSinceLastShot > MIN_FRAMES_SINCE_LAST_SHOT) {
 			if (this->framesSinceLastShot % TICS_PER_SHOT_CHANCE == 0) {
 				srand(time(NULL));
-				//if((int)rand() % 1)
-				cout << "RANDOM! " << (int)rand() % 1 << endl;
+				if ((int)rand() % 2) {
+					this->shoot(enemyGrid);
+				}
 			}
 		}
 		

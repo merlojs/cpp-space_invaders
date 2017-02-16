@@ -14,7 +14,7 @@ class PlayerCharacter : public Character {
 		~PlayerCharacter();
 
 		void processInput(GameInput *playerInput, BulletManager *bulletManager);
-		void resetPosition();
+		void resetStartingPosition();
 };
 
 #endif // PLAYER_CHARACTER_H

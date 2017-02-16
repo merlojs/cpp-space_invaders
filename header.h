@@ -15,15 +15,13 @@ using namespace std;
 #define SCREEN_WIDTH 600
 #define SCREEN_HEIGHT 600
 
-#define SHIP_VELOCITY_X 5
-
 #define FPS 60
 
 // Bordes del area de juego
 const int SCREEN_TOP = 110;
-const int SCREEN_RIGHT = 500;//550;
+const int SCREEN_RIGHT = 500;
 const int SCREEN_BOTTOM = 560;
-const int SCREEN_LEFT = 100;//50;
+const int SCREEN_LEFT = 100;
 
 // Constantes para la grilla de enemigos
 const int ENEMY_GRID_STARTING_X = 150;
@@ -34,6 +32,8 @@ const int ENEMY_GRID_HEIGHT = 5;
 
 const int ENEMY_SPACING_H = 8;
 const int ENEMY_SPACING_V =5;
+
+const int ENEMY_GRID_KILL_Y = 500;
 
 // Constantes de enemigos
 const int ENEMY_WIDTH = 21;
@@ -47,7 +47,7 @@ const int TICS_PER_ENEMY_GRID_STEP = 50;
 
 // Constantes para el Bullet Manager
 const int MAX_BULLET_COUNT = 8;
-const int TICS_PER_SHOT_CHANCE = 10;
+const int TICS_PER_SHOT_CHANCE = 5;
 // Estas constantes siempre deberían ser múltiplos de TICS_PER_SHOT_CHANCE
 const int MIN_FRAMES_SINCE_LAST_SHOT = 50;
 const int MAX_FRAMES_SINCE_LAST_SHOT = 150;
@@ -59,7 +59,9 @@ const int SCORE_ENEMY = 50;
 const int BULLET_WIDTH = 6;
 const int BULLET_HEIGHT = 12;
 
-const int BULLET_SPEED = 5;
+const int BULLET_SPEED = 3;
+
+const int SHIP_VELOCITY_X = 3;
 
 struct Point {
 	int x;

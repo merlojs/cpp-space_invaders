@@ -30,6 +30,6 @@ void PlayerCharacter::processInput(GameInput *playerInput, BulletManager *bullet
 }
 
 
-void PlayerCharacter::resetPosition() {
+void PlayerCharacter::resetStartingPosition() {
 	this->pos = this->startingPos;
 }

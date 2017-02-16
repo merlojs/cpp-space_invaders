@@ -234,6 +234,7 @@ int main()
 				player->processInput(playerInput, bulletManager);
 				player->updatePosition();
 				enemyGrid->updatePosition();
+
 				bulletManager->shotGenerator(enemyGrid);
 				bulletManager->updateBulletsPosition();
 
@@ -244,10 +245,11 @@ int main()
 
 				// Chequeo de colisiones
 				bulletManager->checkPlayerBulletCollisions(enemyGrid, scoreBoard);
-				if (bulletManager->checkEnemyBulletCollisions(player, scoreBoard)) {
+				if (bulletManager->checkEnemyBulletCollisions(player, scoreBoard) ||
+					enemyGrid->getPos().y + enemyGrid->getBounds().h >= ENEMY_GRID_KILL_Y) {
 
 					// Resetea el estado
-					player->resetPosition();
+					player->resetStartingPosition();
 					enemyGrid->resetEnemyPositions();
 					bulletManager->clearBullets();
 					redraw = false;

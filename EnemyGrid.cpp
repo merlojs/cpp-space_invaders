@@ -135,3 +135,11 @@ void EnemyGrid::debugDraw() {
 vector<vector<EnemyCharacter *> *> *EnemyGrid::getEnemies() {
 	return this->enemies;
 }
+
+Point EnemyGrid::getPos() {
+	return this->pos;
+}
+
+Bounds EnemyGrid::getBounds() {
+	return this->bounds;
+}
