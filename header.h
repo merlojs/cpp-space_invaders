@@ -21,9 +21,9 @@ using namespace std;
 
 // Bordes del area de juego
 const int SCREEN_TOP = 110;
-const int SCREEN_RIGHT = 550;
+const int SCREEN_RIGHT = 500;//550;
 const int SCREEN_BOTTOM = 560;
-const int SCREEN_LEFT = 50;
+const int SCREEN_LEFT = 100;//50;
 
 // Constantes para la grilla de enemigos
 const int ENEMY_GRID_STARTING_X = 150;
@@ -44,6 +44,13 @@ const int ENEMY_STEP_WIDTH = 10;
 const int ENEMY_STEP_HEIGHT = 10;
 
 const int TICS_PER_ENEMY_GRID_STEP = 50;
+
+// Constantes para el Bullet Manager
+const int MAX_BULLET_COUNT = 8;
+const int TICS_PER_SHOT_CHANCE = 10;
+// Estas constantes siempre deberían ser múltiplos de TICS_PER_SHOT_CHANCE
+const int MIN_FRAMES_SINCE_LAST_SHOT = 50;
+const int MAX_FRAMES_SINCE_LAST_SHOT = 150;
 
 // Scores
 const int SCORE_ENEMY = 50;
@@ -85,7 +92,7 @@ enum MOVE_DIR {
 };
 
 enum GAME_STATE {
-	ST_SPLASH_SCREEN, ST_INGAME, ST_GAME_OVER
+	ST_SPLASH_SCREEN, ST_INGAME, ST_PLAYER_KILLED, ST_GAME_OVER
 };
 
 void keyboardEventHandler(bool keyUp, int keyCode, GameInput *playerInput);

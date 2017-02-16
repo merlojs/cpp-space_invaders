@@ -4,6 +4,7 @@
 BulletManager::BulletManager()
 {
 	this->enemyBullets = new vector < Bullet * > ;
+	this->framesSinceLastShot = 0;
 	this->playerBullet = 0;
 }
 
@@ -34,20 +35,37 @@ void BulletManager::updateBulletsPosition()
 			this->playerBullet = 0;
 		}
 	}
-	//TODO: Loopear balas de enemigos llamando al método de update
+
+	// Movimiento de balas de enemigos
+	for (vector<Bullet *>::iterator it = this->enemyBullets->begin(); it != this->enemyBullets->end(); it++) {
+		(*it)->updatePosition();
+		if ((*it)->getPos().y > SCREEN_BOTTOM - 15) {
+			this->enemyBullets->erase(it);
+			break;
+		}
+	}
 }
 
 void BulletManager::draw() {
 	if (this->hasPlayerBullet()) {
 		this->playerBullet->draw();
 	}
-	//TODO: Loopear balas de enemigos llamando al método de dibujado
+	
+	// Dibujado de balas de enemigos
+	for (vector<Bullet *>::iterator it = this->enemyBullets->begin(); it != this->enemyBullets->end(); it++) {
+		(*it)->draw();
+	}
 }
 
 Bullet *BulletManager::getPlayerBullet() {
 	return this->playerBullet;
 }
 
+
+void BulletManager::clearBullets() {
+	this->enemyBullets->clear();
+	this->playerBullet = 0;
+}
 
 void BulletManager::checkPlayerBulletCollisions(EnemyGrid *enemyGrid, ScoreBoard *scoreBoard) {
 	if (this->playerBullet) {
@@ -71,11 +89,42 @@ void BulletManager::checkPlayerBulletCollisions(EnemyGrid *enemyGrid, ScoreBoard
 	}
 }
 
-void BulletManager::checkEnemyBulletCollisions(Character *playerCharacter, ScoreBoard *scoreBoard) {
+void BulletManager::shotGenerator(EnemyGrid * enemyGrid) {
+	this->framesSinceLastShot++;
+
+	// Pone tope para que no puedan haber tantos disparos en un momento dado
+	if (this->enemyBullets->size() < MAX_BULLET_COUNT) {
+
+		if (this->framesSinceLastShot > MAX_FRAMES_SINCE_LAST_SHOT) {
+			this->shoot(enemyGrid);
+		}
+		else if (this->framesSinceLastShot > MIN_FRAMES_SINCE_LAST_SHOT) {
+			if (this->framesSinceLastShot % TICS_PER_SHOT_CHANCE == 0) {
+				srand(time(NULL));
+				//if((int)rand() % 1)
+				cout << "RANDOM! " << (int)rand() % 1 << endl;
+			}
+		}
+		
+	}
+
+}
+
+void BulletManager::shoot(EnemyGrid *enemyGrid) {
+	// Asigna un enemigo para que dispare y genera el disparo
+	this->addEnemyBullet(enemyGrid->getShooter()->shoot());
+	framesSinceLastShot = 0;
+}
+
+bool BulletManager::checkEnemyBulletCollisions(Character *playerCharacter, ScoreBoard *scoreBoard) {
 	for (vector<Bullet *>::iterator it = this->enemyBullets->begin(); it != this->enemyBullets->end(); it++) {
 		if (playerCharacter->isColliding((*it))) {
 			playerCharacter->kill();
 			scoreBoard->removeLives(1);
+			this->enemyBullets->erase(it);
+			return true;
 		}
 	}
+
+	return false;
 }

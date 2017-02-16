@@ -13,6 +13,8 @@ private:
 	Bullet *playerBullet;
 	vector<Bullet *> *enemyBullets;
 
+	int framesSinceLastShot;
+	void shoot(EnemyGrid *enemyGrid);
 public:
 	BulletManager();
 	~BulletManager();
@@ -24,8 +26,11 @@ public:
 	Bullet *getPlayerBullet();
 
 	void checkPlayerBulletCollisions(EnemyGrid *enemyGrid, ScoreBoard *scoreBoard);
-	void checkEnemyBulletCollisions(Character *playerCharacter, ScoreBoard *scoreBoard);
+	bool checkEnemyBulletCollisions(Character *playerCharacter, ScoreBoard *scoreBoard);
 	void updateBulletsPosition();
+
+	void shotGenerator(EnemyGrid * enemyGrid);
+	void clearBullets();
 
 	void draw();
 };

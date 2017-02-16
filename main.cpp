@@ -91,6 +91,7 @@ int main()
     // ALLEGRO_BITMAP *shields = al_load_bitmap("Recursos/escudos.bmp");
     ALLEGRO_BITMAP *gameOver = al_load_bitmap("Recursos/GameOver.bmp");
 	ALLEGRO_BITMAP *spriteBullet = al_load_bitmap("Recursos/Bala2.bmp");
+	ALLEGRO_BITMAP *spriteEnemyBullet = al_load_bitmap("Recursos/BalaE.bmp");
 	
 
 	// Load fonts
@@ -151,7 +152,7 @@ int main()
     al_clear_to_color(al_map_rgb(0,0,0));
 
 	int gameState = ST_SPLASH_SCREEN;
-	int splashScreenFlicker = 0;
+	int currentStateFrames = 0;
 	bool doexit = false;
 
     /* GAME CHARACTERS */
@@ -164,13 +165,14 @@ int main()
     startingPos.y = SCREEN_HEIGHT - 100;
 
 	PlayerCharacter *player = new PlayerCharacter(spriteShip, spriteBullet, startingPos, playerBounds);
-	EnemyGrid *enemyGrid = new EnemyGrid(ENEMY_GRID_WIDTH, ENEMY_GRID_HEIGHT, spriteEnemy, spriteBullet);
+	EnemyGrid *enemyGrid = new EnemyGrid(ENEMY_GRID_WIDTH, ENEMY_GRID_HEIGHT, spriteEnemy, spriteEnemyBullet);
 	BulletManager *bulletManager = new BulletManager();
 	ScoreBoard *scoreBoard = new ScoreBoard(scoreFont);
 
 	al_convert_mask_to_alpha(spriteShip, al_map_rgb(255, 0, 255));
 	al_convert_mask_to_alpha(spriteEnemy, al_map_rgb(255, 0, 255));
 	al_convert_mask_to_alpha(spriteBullet, al_map_rgb(255, 0, 255));
+	al_convert_mask_to_alpha(spriteEnemyBullet, al_map_rgb(255, 0, 255));
     al_convert_mask_to_alpha(background, al_map_rgb(255, 0 , 255));  //HACE INVISIBLE EL COLOR MAGENTA
 
    /* GAME ROUTINE */
@@ -202,13 +204,15 @@ int main()
 			break;
 		}
 
+		currentStateFrames++;
+
 		switch (gameState) {
 			case ST_SPLASH_SCREEN:
 				if (playerInput->enter) {
 					gameState = ST_INGAME;
 				}
 
-				if (splashScreenFlicker < 25) {
+				if (currentStateFrames < 25) {
 					al_draw_bitmap_region(marquee, 0, 0, 600, 600, 0, 0, 0);
 					al_flip_display();
 				}
@@ -217,19 +221,20 @@ int main()
 					al_flip_display();
 				}
 
-				if (++splashScreenFlicker == 50) {
-					splashScreenFlicker = 0;
+				if (currentStateFrames == 50) {
+					currentStateFrames = 0;
 				}
 				break;
 			case ST_INGAME:
 				if (scoreBoard->getLives() == 0) {
 					gameState = ST_GAME_OVER;
 				}
-			
+
 				// Procesar el input
 				player->processInput(playerInput, bulletManager);
 				player->updatePosition();
 				enemyGrid->updatePosition();
+				bulletManager->shotGenerator(enemyGrid);
 				bulletManager->updateBulletsPosition();
 
 				// Limite para que la nave del jugador no pueda salir de la pantalla
@@ -239,6 +244,17 @@ int main()
 
 				// Chequeo de colisiones
 				bulletManager->checkPlayerBulletCollisions(enemyGrid, scoreBoard);
+				if (bulletManager->checkEnemyBulletCollisions(player, scoreBoard)) {
+
+					// Resetea el estado
+					player->resetPosition();
+					enemyGrid->resetEnemyPositions();
+					bulletManager->clearBullets();
+					redraw = false;
+
+					currentStateFrames = 0;
+					gameState = ST_PLAYER_KILLED;
+				}
 
 				// Dibujado
 				if (redraw) {
@@ -252,6 +268,17 @@ int main()
 					//enemyGrid->debugDraw();
 
 					al_flip_display(); //si no se ve blanco
+				}
+
+				break;
+			case ST_PLAYER_KILLED:
+				al_clear_to_color(al_map_rgb(0, 0, 0));
+				al_draw_bitmap(background, 0, 0, 0);
+				scoreBoard->draw();
+				al_flip_display(); //si no se ve blanco
+
+				if (currentStateFrames == 100) {
+					gameState = ST_INGAME;
 				}
 
 				break;
@@ -308,7 +335,7 @@ void keyboardEventHandler(bool keyUp, int keyCode, GameInput *playerInput) {
 		}
 
 		if (keyCode == ALLEGRO_KEY_R) {
-			playerInput->replay = true;
+			playerInput->replay = false;
 		}
     } else {
         if (keyCode == ALLEGRO_KEY_ESCAPE) {

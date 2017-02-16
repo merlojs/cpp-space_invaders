@@ -5,6 +5,7 @@ using namespace std;
 PlayerCharacter::PlayerCharacter(ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP *bulletSprite, Point startingPos, Bounds dimensions) :
         Character(sprite, bulletSprite, startingPos, dimensions) {
 	this->shotDirection = UP;
+	this->startingPos = startingPos;
 }
 
 PlayerCharacter::~PlayerCharacter() {
@@ -26,4 +27,9 @@ void PlayerCharacter::processInput(GameInput *playerInput, BulletManager *bullet
 	if (playerInput->action && !bulletManager->hasPlayerBullet()) {
 		bulletManager->addPlayerBullet(this->shoot());
 	}
+}
+
+
+void PlayerCharacter::resetPosition() {
+	this->pos = this->startingPos;
 }

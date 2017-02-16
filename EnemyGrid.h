@@ -22,6 +22,7 @@ class EnemyGrid {
 		vector<vector<EnemyCharacter *> *> *getEnemies();
 
 		void updatePosition();
+		void resetEnemyPositions();
 
 		void draw();
 		void debugDraw();

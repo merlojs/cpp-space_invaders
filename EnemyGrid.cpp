@@ -38,6 +38,28 @@ EnemyGrid::~EnemyGrid() {
 
 }
 
+void EnemyGrid::resetEnemyPositions() {
+	this->pos.x = ENEMY_GRID_STARTING_X;
+	this->pos.y = ENEMY_GRID_STARTING_Y;
+
+	this->prevDirection = RIGHT;
+	this->direction = RIGHT;
+
+	int i = 0, j = 0;
+	Point newPos;
+	for (vector<vector<EnemyCharacter *> *>::iterator it = this->enemies->begin(); it != this->enemies->end(); it++, i++) {
+		vector<EnemyCharacter *> *enemyRow = (*it);
+
+		j = 0;
+		for (vector<EnemyCharacter *>::iterator it2 = enemyRow->begin(); it2 != enemyRow->end(); it2++, j++) {
+			newPos.x = this->pos.x + j * (ENEMY_SPACING_H + ENEMY_WIDTH);
+			newPos.y = this->pos.y + i * (ENEMY_SPACING_V + ENEMY_HEIGHT);
+
+			(*it2)->setPos(newPos);
+		}
+	}
+}
+
 void EnemyGrid::updatePosition() {
 	if (this->framesSinceLastStep < TICS_PER_ENEMY_GRID_STEP) {
 		this->framesSinceLastShot++;
@@ -68,17 +90,17 @@ void EnemyGrid::updatePosition() {
 			}
 		}
 
+		Point newPos;
 		int i = 0, j = 0;
 		for (vector<vector<EnemyCharacter *> *>::iterator it = this->enemies->begin(); it != this->enemies->end(); it++, i++) {
 			vector<EnemyCharacter *> *enemyRow = (*it);
 
 			j = 0;
 			for (vector<EnemyCharacter *>::iterator it2 = enemyRow->begin(); it2 != enemyRow->end(); it2++, j++) {
-				int enemyY = this->pos.y + i * (ENEMY_SPACING_V + ENEMY_HEIGHT);
-				int enemyX = this->pos.x + j * (ENEMY_SPACING_H + ENEMY_WIDTH);
+				newPos.x = this->pos.x + j * (ENEMY_SPACING_H + ENEMY_WIDTH);
+				newPos.y = this->pos.y + i * (ENEMY_SPACING_V + ENEMY_HEIGHT);
 
-				Point enemyPos = (*it2)->getPos();
-				(*it2)->setPos(enemyX, enemyY);
+				(*it2)->setPos(newPos);
 			}
 		}
 	}
@@ -100,8 +122,8 @@ EnemyCharacter *EnemyGrid::getShooter() {
 	// Determinar si dispara (tope de balas en vuelo, tiempo)
 	srand(time(NULL));
 
-	int yIndex = 1 + rand() % ENEMY_GRID_HEIGHT;
-	int xIndex = 1 + rand() % ENEMY_GRID_WIDTH;
+	int yIndex = rand() % ENEMY_GRID_HEIGHT;
+	int xIndex = rand() % ENEMY_GRID_WIDTH;
 
 	return this->enemies->at(yIndex)->at(xIndex);
 }
